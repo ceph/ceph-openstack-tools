@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-DIR=`pwd`
+DIR=/home/ubuntu/openstack
 CMD=$1
 SCREEN_NAME="nova"
 SCREEN_STATUS=${SCREEN_STATUS:-1}
@@ -41,8 +41,8 @@ NOVA_DIR=$DIR/$DIRNAME
 GLANCE_DIR=$DIR/glance
 USE_MYSQL=${USE_MYSQL:-1}
 INTERFACE=${INTERFACE:-eth0}
-FLOATING_RANGE=${FLOATING_RANGE:-10.6.0.0/27}
-FIXED_RANGE=${FIXED_RANGE:-10.0.0.0/24}
+FLOATING_RANGE=${FLOATING_RANGE:-192.168.0.0/27}
+FIXED_RANGE=${FIXED_RANGE:-192.168.0.0/24}
 MYSQL_PASS=${MYSQL_PASS:-nova}
 LOCK_PATH=${LOCK_PATH:-/tmp}
 INSTANCES_PATH=${INSTANCES_PATH:-$NOVA_DIR/instances}
@@ -52,7 +52,7 @@ USE_LDAP=${USE_LDAP:-0}
 USE_OPENDJ=${USE_OPENDJ:-0}
 # Use IPv6
 USE_IPV6=${USE_IPV6:-0}
-LIBVIRT_TYPE=${LIBVIRT_TYPE:-qemu}
+LIBVIRT_TYPE=${LIBVIRT_TYPE:-kvm}
 NET_MAN=${NET_MAN:-VlanManager}
 # NOTE(vish): If you are using FlatDHCP on multiple hosts, set the interface
 #             below but make sure that the interface doesn't already have an
@@ -99,14 +99,12 @@ if [ "$CMD" == "install" ]; then
     sudo add-apt-repository ppa:nova-core/trunk
     sudo apt-get update
     sudo apt-get install -y dnsmasq-base kpartx kvm gawk iptables ebtables
-    sudo apt-get install -y user-mode-linux kvm libvirt-bin
+    sudo apt-get install -y libvirt-bin
     # Bypass  RabbitMQ "OK" dialog
     echo "rabbitmq-server rabbitmq-server/upgrade_previous note" | sudo debconf-set-selections
     sudo apt-get install -y screen euca2ools vlan curl rabbitmq-server
-    sudo apt-get install -y lvm2 iscsitarget open-iscsi
     sudo apt-get install -y socat unzip glance
     echo "ISCSITARGET_ENABLE=true" | sudo tee /etc/default/iscsitarget
-    sudo /etc/init.d/iscsitarget restart
     sudo modprobe kvm
     sudo /etc/init.d/libvirt-bin restart
     sudo modprobe nbd
@@ -169,6 +167,7 @@ if [ "$CMD" == "run" ] || [ "$CMD" == "run_detached" ]; then
 --fixed_range=$FIXED_RANGE
 --lock_path=$LOCK_PATH
 --instances_path=$INSTANCES_PATH
+--volume_drive=nova.volume.driver.RBDDriver
 NOVA_CONF_EOF
 
     if [ -n "$FLAT_INTERFACE" ]; then
@@ -263,13 +262,4 @@ fi
 if [ "$CMD" == "run" ] || [ "$CMD" == "clean" ]; then
     screen -S nova -X quit
     rm *.pid*
-fi
-
-if [ "$CMD" == "scrub" ]; then
-    $NOVA_DIR/tools/clean-vlans
-    if [ "$LIBVIRT_TYPE" == "uml" ]; then
-        virsh -c uml:///system list | grep i- | awk '{print \$1}' | xargs -n1 virsh -c uml:///system destroy
-    else
-        virsh list | grep i- | awk '{print \$1}' | xargs -n1 virsh destroy
-    fi
 fi
