@@ -33,10 +33,10 @@ sudo make install
 cd ~
 
 $DIR/nova.sh branch
-sudo ./novascript/nova.sh run
+sudo ./novascript/nova.sh run &
 
 while 1; do
-	if [euca-describe-images | grep -q 'small_debian\s+available']; then
+	if [ timeout 5 euca-describe-images | grep -q 'small_debian\s+available' ]; then
 		break
 	fi
 done
@@ -52,4 +52,4 @@ done
 rbd rm volume-00000001
 rbd import debian.img volume-00000001
 $DIR/boot-from-volume
-vncviewer server: 0.0.0.0:5900
+vncviewer server: 0.0.0.0:5900 &
