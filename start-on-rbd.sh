@@ -3,6 +3,8 @@ set -e
 
 DIR=`pwd`
 
+sudo apt-get list > previous_packages.txt
+
 if [ ! -f /etc/apt/sources.list.d/ceph.list ]; then
 	(cat <<EOF
 deb http://ceph.newdream.net/debian-snapshot-amd64/master/ natty main
