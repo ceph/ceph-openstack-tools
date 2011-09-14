@@ -3,7 +3,7 @@ set -e
 
 DIR=`pwd`
 
-sudo apt-get list > previous_packages.txt
+sudo dpkg --get-selections > previous_packages.txt
 
 if [ ! -f /etc/apt/sources.list.d/ceph.list ]; then
 	(cat <<EOF
