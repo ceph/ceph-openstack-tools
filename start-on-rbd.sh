@@ -30,10 +30,9 @@ cd qemu-kvm
 ./configure --enable-rbd --enable-system --enable-kvm --prefix=/usr --sysconfdir=/etc --enable-io-thread
 make -j4
 sudo make install
-cd ~
 
 $DIR/nova.sh branch
-sudo ./novascript/nova.sh run &
+sudo $DIR/nova.sh run &
 
 while 1; do
 	if [ timeout 5 euca-describe-images | grep -q 'small_debian\s+available' ]; then
