@@ -28,12 +28,26 @@ cd qemu-kvm
 ./configure --enable-rbd --enable-system --enable-kvm --prefix=/usr --sysconfdir=/etc --enable-io-thread
 make -j4
 sudo make install
+cd ~
 
 $DIR/nova.sh branch
-# TODO: the other commands here
+sudo ./novascript/nova.sh run
 
 while 1; do
 	if [euca-describe-images | grep -q 'small_debian\s+available']; then
 		break
 	fi
 done
+
+source ~/openstack/nova/novarc
+euca-create-volume -s 1 -z nova
+while 1; do
+	if [euca-describe-volumes | grep -q 'vol-00000001.*available']; then
+		break
+	fi
+done
+
+rbd rm volume-00000001
+rbd import debian.img volume-00000001
+$DIR/boot-from-volume
+vncviewer server: 0.0.0.0:5900
