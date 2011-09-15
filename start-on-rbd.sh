@@ -32,7 +32,7 @@ make -j4
 sudo make install
 
 $DIR/nova.sh branch
-sudo $DIR/nova.sh run &
+sudo $DIR/nova.sh run_detached
 
 sudo chown ubuntu:ubuntu ~/openstack/nova/novarc
 source ~/openstack/nova/novarc
