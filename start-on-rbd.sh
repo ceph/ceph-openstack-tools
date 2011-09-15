@@ -36,6 +36,7 @@ sudo make install
 $DIR/nova.sh branch
 sudo $DIR/nova.sh run_detached
 
+echo "Waiting for image to become available..."
 sudo chown ubuntu:ubuntu ~/openstack/nova/novarc
 source ~/openstack/nova/novarc
 while true; do
@@ -46,13 +47,16 @@ done
 
 echo "Creating volume..."
 euca-create-volume -s 1 -z nova
+echo "Waiting for volume to be available..."
 while true; do
 	if ( euca-describe-volumes | grep -q "vol-00000001.*available" ) then
 		break
 	fi
 done
 
+echo "Replacing blank image with real one..."
 rbd rm volume-00000001
 rbd import debian.img volume-00000001
+echo "Running instance based "
 $DIR/boot-from-volume
 vncviewer server: 0.0.0.0:5900 &
