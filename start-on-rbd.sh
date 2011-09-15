@@ -40,7 +40,7 @@ echo "Waiting for image to become available..."
 sudo chown ubuntu:ubuntu ~/openstack/nova/novarc
 source ~/openstack/nova/novarc
 while true; do
-	if ( timeout 5 euca-describe-images | grep -q "small_debian\s+available" ) then
+	if ( timeout 5 euca-describe-images | egrep -q "small_debian\)\s+available" ) then
 		break
 	fi
 	sleep 2
@@ -50,7 +50,7 @@ echo "Creating volume..."
 euca-create-volume -s 1 -z nova
 echo "Waiting for volume to be available..."
 while true; do
-	if ( euca-describe-volumes | grep -q "vol-00000001.*available" ) then
+	if ( euca-describe-volumes | egrep -q "vol-00000001\s+1\s+nova\s+available" ) then
 		break
 	fi
 	sleep 2
