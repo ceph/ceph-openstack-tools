@@ -1,33 +1,59 @@
 #!/usr/bin/env python
 
-import httplib2
 import argparse
+import httplib2
+import json
 import os
+
 
 def main():
     http = httplib2.Http()
     parser = argparse.ArgumentParser(description='Boot an OpenStack instance from RBD')
     parser.add_argument(
         '--endpoint',
-        help='the Nova API endpoint (IP:port)',
-        default=os.getenv("NOVA_URL")
+        help='the Nova API endpoint (http://IP:port/vX.Y/)',
+        default=os.getenv("NOVA_URL"),
         )
     parser.add_argument(
-        '--image',
+        '--image-id',
         help="The image ID Nova will pretend to boot from (ie, 1 -- not ami-0000001)",
-        default='4'
+        default=4,
         )
     parser.add_argument(
-        '--volume_id',
+        '--volume-id',
         help='The RBD volume ID (ie, 1 -- not volume-0000001)',
+        default=1,
         )
 
     args = parser.parse_args()
 
-    resp, body = http.request('{endpoint}/volumes/os-volumes_boot'.format(endpoint=args.endpoint), method='POST',
-                              headers={'Content-Type': 'application/json', 'x-auth-project-id': 'admin', 'x-auth-token': 'admin:admin'},
-                              body='{"server": {"min_count": 1, "flavorRef": "1", "name": "test1", "imageRef": {image}, "max_count": 1,'.format(image=args.image) + \
-                              '"block_device_mapping": [{"virtual": "root", "device_name": "/dev/vda", "volume_id":{volume_id}, "delete_on_termination": false}]}}'.format(volume_id=args.volume_id))
+    headers = {
+        'Content-Type': 'application/json',
+        'x-auth-project-id': 'admin',
+        'x-auth-token': 'admin:admin'
+        }
+    req = {
+        'server':
+            {
+            'min_count': 1,
+            'flavorRef': 1,
+            'name': 'test1',
+            'imageRef': args.image_id,
+            'max_count': 1,
+            'block_device_mapping': [{
+                    'virtual': 'root',
+                    'device_name': '/dev/vda',
+                    'volume_id': args.volume_id,
+                    'delete_on_termination': False,
+                    }]
+            }}
 
-if __name__=='__main__':
+    resp, body = http.request(
+        '{endpoint}/volumes/os-volumes_boot'.format(endpoint=args.endpoint),
+        method='POST',
+        headers=headers,
+        body=json.dumps(req),
+        )
+
+if __name__ == '__main__':
     main()
