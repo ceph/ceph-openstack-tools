@@ -24,13 +24,19 @@ def main():
         help='The RBD volume ID (ie, 1 -- not volume-0000001)',
         default=1,
         )
-
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        default=False,
+        help='be more verbose',
+        )
     args = parser.parse_args()
 
     headers = {
         'Content-Type': 'application/json',
         'x-auth-project-id': 'admin',
-        'x-auth-token': 'admin:admin'
+        'x-auth-token': 'admin:admin',
+        'Accept': 'application/json',
         }
     req = {
         'server':
@@ -54,6 +60,13 @@ def main():
         headers=headers,
         body=json.dumps(req),
         )
+    if resp.status == 200:
+        print "Instance scheduled successfully."
+        if args.verbose:
+            print json.dumps(json.loads(body), indent=4, sort_keys=True)
+    else:
+        print "Failed to create an instance: response status", resp.status
+        print json.dumps(json.loads(body), indent=4, sort_keys=True)
 
 if __name__ == '__main__':
     main()
