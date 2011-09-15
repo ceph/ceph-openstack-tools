@@ -43,6 +43,7 @@ while true; do
 	if ( timeout 5 euca-describe-images | grep -q "small_debian\s+available" ) then
 		break
 	fi
+	sleep 2
 done
 
 echo "Creating volume..."
@@ -52,6 +53,7 @@ while true; do
 	if ( euca-describe-volumes | grep -q "vol-00000001.*available" ) then
 		break
 	fi
+	sleep 2
 done
 
 echo "Replacing blank image with real one..."
