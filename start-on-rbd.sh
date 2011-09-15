@@ -15,6 +15,8 @@ fi
 
 sudo apt-get update
 sudo apt-get install -y ceph librbd-dev libglib2.0-dev xvnc4viewer
+# For running nova tests:
+sudo apt-get install -y libxml2-dev libxslt1-dev swig
 sudo cp $DIR/ceph.conf /etc/ceph/ceph.conf
 mkdir -p ~/ceph_logs/dev/osd0 ~/ceph_logs/dev/mon.a ~/ceph_logs/dev/mon.b ~/ceph_logs/dev/mon.c ~/ceph_logs/out
 sudo mkcephfs -a -c /etc/ceph/ceph.conf
