@@ -3,7 +3,7 @@ set -e
 
 DIR=`basename $0`
 
-sudo dpkg --get-selections > previous_packages.txt
+sudo dpkg --get-selections > $DIR/previous_packages.txt
 
 if [ ! -f /etc/apt/sources.list.d/ceph.list ]; then
 	(cat <<EOF
@@ -24,11 +24,10 @@ sudo service ceph start
 mkdir ~/openstack
 
 $DIR/nova.sh install
-git clone git://ceph.newdream.net/git/qemu-kvm.git
-cd qemu-kvm
+git clone git://ceph.newdream.net/git/qemu-kvm.git $DIR/qemu-kvm
+cd $DIR/qemu-kvm
 ./configure --enable-rbd --enable-system --enable-kvm --prefix=/usr --sysconfdir=/etc --enable-io-thread
 make -j4
 sudo make install
-cd ..
 
 $DIR/nova.sh branch
