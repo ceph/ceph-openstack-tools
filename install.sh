@@ -3,7 +3,9 @@ set -e
 
 DIR=`basename $0`
 
-sudo dpkg --get-selections > $DIR/previous_packages.txt
+if [ ! -f $DIR/previous_packages.txt ]; then
+	sudo dpkg --get-selections > $DIR/previous_packages.txt
+fi
 
 if [ ! -f /etc/apt/sources.list.d/ceph.list ]; then
 	(cat <<EOF
