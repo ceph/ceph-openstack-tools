@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DIR=`basename $0`
+DIR=`dirname $0`
 
 if [ ! -f $DIR/previous_packages.txt ]; then
 	sudo dpkg --get-selections > $DIR/previous_packages.txt
