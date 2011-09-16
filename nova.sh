@@ -5,7 +5,7 @@ SCREEN_NAME="nova"
 SCREEN_STATUS=${SCREEN_STATUS:-1}
 
 if [ "$CMD" = "branch" ]; then
-    SOURCE_BRANCH=${2:-lp:~jdurgin/nova/boot-from-volume-lp850305}
+    SOURCE_BRANCH=${2:-lp:nova}
     DIRNAME=${3:-nova}
 else
     DIRNAME=${2:-nova}
