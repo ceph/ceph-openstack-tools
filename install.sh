@@ -31,5 +31,6 @@ cd $DIR/qemu-kvm
 ./configure --enable-rbd --enable-system --enable-kvm --prefix=/usr --sysconfdir=/etc --enable-io-thread
 make -j4
 sudo make install
+cd ..
 
 $DIR/nova.sh branch
