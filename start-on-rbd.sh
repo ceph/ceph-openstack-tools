@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DIR=`basename $0`
+DIR=`dirname $0`
 
 if [ ! -f $DIR/debian.img ]; then
 	echo "Downloading debian image..."
