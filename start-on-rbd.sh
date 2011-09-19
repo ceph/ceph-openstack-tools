@@ -35,6 +35,26 @@ done
 echo "Replacing blank image with real one..."
 rbd rm volume-00000001
 rbd import $DIR/debian.img volume-00000001
-echo "Running instance based "
+echo "Requesting an instance..."
 $DIR/boot-from-volume
-vncviewer server: 0.0.0.0:5900 &
+echo "Waiting for instance to start..."
+while true; do
+	if ( euca-describe-instances | grep -q "i-00000001.*running" ) then
+		break
+	fi
+	sleep 2
+done
+cat <<EOF
+Instance is running. You can attach to it with:
+    vncviewer 0.0.0.0:5900
+
+To interact with nova,
+    source ~/openstack/nova/novarc
+    euca-describe-images
+    ...
+or
+    sudo screen -S nova -x
+
+To stop nova:
+    sudo $DIR/nova.sh terminate && sudo $DIR/nova.sh clean
+EOF
