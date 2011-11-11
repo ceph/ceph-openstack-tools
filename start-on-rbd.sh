@@ -2,6 +2,7 @@
 set -e
 
 DIR=`dirname $0`
+DEVSTACK_DIR=${DEVSTACK_DIR:-~/devstack}
 
 if [ ! -f $DIR/debian.img ]; then
 	echo "Downloading debian image..."
@@ -10,7 +11,7 @@ fi
 touch $DIR/dummy_img
 glance-upload --disk-format raw $DIR/dummy_img dummy_raw_img
 
-sudo $DIR/nova.sh run_detached
+FIXED_RANGE="192.168.0.0/24" FLOATING_RANGE="192.168.0.0/27" sudo $DEVSTACK_DIR/stack.sh
 
 echo "Waiting for image to become available..."
 sudo chown ubuntu:ubuntu ~/openstack/nova/novarc
@@ -48,13 +49,9 @@ cat <<EOF
 Instance is running. You can attach to it with:
     vncviewer 0.0.0.0:5900
 
-To interact with nova,
-    source ~/openstack/nova/novarc
-    euca-describe-images
-    ...
-or
-    sudo screen -S nova -x
+To interact with openstack,
+    sudo screen -S stack -x
 
-To stop nova:
-    sudo $DIR/nova.sh terminate && sudo $DIR/nova.sh clean
+To stop openstack:
+    sudo screen -S stack -X quit
 EOF

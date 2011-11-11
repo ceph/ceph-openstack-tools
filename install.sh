@@ -23,7 +23,6 @@ sudo cp $DIR/ceph.conf /etc/ceph/ceph.conf
 mkdir -p ~/ceph_logs/dev/osd0 ~/ceph_logs/dev/mon.a ~/ceph_logs/dev/mon.b ~/ceph_logs/dev/mon.c ~/ceph_logs/out
 sudo mkcephfs -a -c /etc/ceph/ceph.conf
 sudo service ceph start
-mkdir ~/openstack
 
 $DIR/nova.sh install
 git clone git://github.com/NewDreamNetwork/qemu-kvm.git $DIR/qemu-kvm
